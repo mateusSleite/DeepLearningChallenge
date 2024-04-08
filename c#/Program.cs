@@ -10,7 +10,7 @@ dynamic np = Py.Import("numpy");
 dynamic model = tf.keras.models.load_model("model.keras");
 
 dynamic list = new PyList();
-list.append(tf.keras.utils.load_img("tests/kkk.jpg"));
+list.append(tf.keras.utils.load_img("tests/mateus.png"));
 dynamic data = np.array(list);
 dynamic result = model.predict(data);
 

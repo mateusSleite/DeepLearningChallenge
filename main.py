@@ -2,10 +2,10 @@ import os
 from tensorflow.keras import models, layers, optimizers, utils, losses, callbacks, initializers
 import matplotlib.pyplot as plt
 
-epochs = 100
+epochs = 150
 batch_size = 32
-patience = 17
-learning_rate = 0.001
+patience = 10
+learning_rate = 0.0001
 num_classes = 17
 model_path = 'checkpoints/model.keras'  
 
@@ -22,6 +22,7 @@ model = models.load_model(model_path) if exists else models.Sequential([
     layers.MaxPooling2D((2, 2)),
     layers.Conv2D(128, (3, 3), activation='relu', kernel_initializer=initializers.RandomNormal()),
     layers.MaxPooling2D((2, 2)),
+    layers.Dropout(0.5),
     layers.Flatten(),
     layers.Dropout(0.5),
     layers.Dense(256, activation='relu', kernel_initializer=initializers.RandomNormal()),
@@ -64,11 +65,9 @@ history = model.fit(
     validation_data=test_dataset,
     callbacks=[
         callbacks.EarlyStopping(
-            monitor='val_accuracy',
+            monitor='val_loss',
             patience=patience,
             verbose=1,
-            mode='max',
-            baseline=0.72,
             restore_best_weights=True
         ),
         callbacks.ModelCheckpoint(
