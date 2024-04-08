@@ -1,14 +1,15 @@
 import os
 from tensorflow.keras import models, layers, optimizers, utils, losses, callbacks, initializers
+import matplotlib.pyplot as plt
 
 epochs = 100
 batch_size = 32
-patience = 10
+patience = 17
 learning_rate = 0.001
 num_classes = 17
-model_path = 'checkpoints/model.keras'
+model_path = 'checkpoints/model.keras'  
 
-exists = os.path.exists(model_path)
+exists = os.path.exists(model_path) 
 
 model = models.load_model(model_path) if exists else models.Sequential([
     layers.Resizing(128, 128),
@@ -63,9 +64,11 @@ history = model.fit(
     validation_data=test_dataset,
     callbacks=[
         callbacks.EarlyStopping(
-            monitor='val_loss',
+            monitor='val_accuracy',
             patience=patience,
             verbose=1,
+            mode='max',
+            baseline=0.72,
             restore_best_weights=True
         ),
         callbacks.ModelCheckpoint(
@@ -77,3 +80,15 @@ history = model.fit(
         )
     ]
 )
+
+train_accuracy = history.history['accuracy']
+val_accuracy = history.history['val_accuracy']
+epochs = range(1, len(train_accuracy) + 1)
+
+plt.plot(epochs, train_accuracy, 'b', label='Accuracy')
+plt.plot(epochs, val_accuracy, 'r', label='Validation Accuracy')
+plt.title('Training and Validation Accuracy')
+plt.xlabel('Epochs')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.show()
